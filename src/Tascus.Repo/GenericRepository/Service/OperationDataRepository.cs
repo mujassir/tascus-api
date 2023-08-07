@@ -11,14 +11,12 @@ namespace Tascus.Repo.GenericRepository.Service
     public class OperationDataRepository : IOperationDataRepository
     {
         private readonly RepositoryContext _dbContext;
-        private readonly IMapper _mapper;
 
-        public OperationDataRepository(RepositoryContext dbContext, IMapper mapper)
+        public OperationDataRepository(RepositoryContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
         }
-        public async Task<List<ProductStatus_Response>> getOperationData(Product_Payload payload)
+        public async Task<List<OperationData>> GetOperationData(Production_Payload payload)
         {
             if (!Enum.IsDefined(typeof(OperationIDs), payload.Operation_ID))
                 throw new Exception("Invalid Operation Id value!");
@@ -28,7 +26,6 @@ namespace Tascus.Repo.GenericRepository.Service
                     od.Model_Number == payload.Part_Number &&
                     od.Serial_Number == payload.Serial_Number &&
                     od.Operation_ID == payload.Operation_ID)
-                .ProjectTo<ProductStatus_Response>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             return operationData;

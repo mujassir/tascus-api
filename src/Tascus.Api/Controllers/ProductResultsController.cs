@@ -1,31 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Tascus.Core.Dtos;
 using Tascus.Core.Model;
 using Tascus.Service.Interfaces;
-using Tascus.Service.Services;
 
 namespace Tascus.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProductResultsController : Controller
+    public class ProductResultsController : BaseApiController
     {
         private readonly IProductionDataServices _service;
 
-        public ProductResultsController(IProductionDataServices service)
+        public ProductResultsController(IProductionDataServices service, IMapper mapper) : base(mapper)
         {
             _service = service;
         }
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] Product_Payload payload)
+        public async Task<IActionResult> Get([FromQuery] Production_Payload payload)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var operationData = await _service.getProductionData(payload);
-                return Ok(operationData);
+                var data = await _service.GetProductionData(payload);
+                return Ok(_mapper.Map<List<ProductionDto>>(data));
             }
             catch (Exception ex)
             {
@@ -34,13 +34,13 @@ namespace Tascus.Api.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> Post(ProductionData product)
+        public async Task<IActionResult> Post(ProductionDto payload)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
-
+                var product = _mapper.Map<ProductionData>(payload);
                 await _service.InsertProductionData(product);
                 return Ok(new { Message = "Product Result Created Successfully." });
             }

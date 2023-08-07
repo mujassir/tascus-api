@@ -11,19 +11,17 @@ namespace Tascus.Repo.GenericRepository.Service
     public class ProductionDataRepository : IProductionDataRepository
     {
         private readonly RepositoryContext _dbContext;
-        private readonly IMapper _mapper;
-        public ProductionDataRepository(RepositoryContext dbContext, IMapper mapper)
+        public ProductionDataRepository(RepositoryContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
         }
 
-        public async Task<List<ProductResults_Response>> getProductionData(Product_Payload payload)
+        public async Task<List<ProductionData>> getProductionData(Production_Payload payload)
         {
             if (!Enum.IsDefined(typeof(OperationIDsAll), payload.Operation_ID))
                 throw new Exception("Invalid Operation Id value!");
 
-            List<ProductResults_Response> productionData;
+            List<ProductionData> productionData;
             if(payload.Operation_ID != -1)
             {
                 productionData = await _dbContext.ProductionData
@@ -31,7 +29,6 @@ namespace Tascus.Repo.GenericRepository.Service
                     od.Part_Number == payload.Part_Number &&
                     od.Serial_Number == payload.Serial_Number &&
                     od.Operation_ID == payload.Operation_ID)
-                .ProjectTo<ProductResults_Response>(_mapper.ConfigurationProvider)
                 .ToListAsync();
             }
             else
@@ -40,7 +37,6 @@ namespace Tascus.Repo.GenericRepository.Service
                 .Where(od =>
                     od.Part_Number == payload.Part_Number &&
                     od.Serial_Number == payload.Serial_Number)
-                .ProjectTo<ProductResults_Response>(_mapper.ConfigurationProvider)
                 .ToListAsync();
             }
 

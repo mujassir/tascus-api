@@ -5,7 +5,7 @@ namespace Tascus.Repo.GenericRepository.Interface
 {
     public interface IProductionDataRepository
     {
-        Task<List<ProductResults_Response>> getProductionData(Product_Payload payload);
+        Task<List<ProductionData>> getProductionData(Production_Payload payload);
         Task InsertProductionData(ProductionData product);
     }
 }

@@ -13,7 +13,8 @@ namespace Tascus.Core.Mappings
     {
         public OperationDataProfile()
         {
-            CreateMap<OperationData, ProductStatus_Response>().ReverseMap();
+            CreateMap<OperationData, OperationDto>().ReverseMap();
+            CreateMap<OperationData, Operation_Payload>().ReverseMap();
         }
     }
 }

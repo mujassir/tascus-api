@@ -14,9 +14,9 @@ namespace Tascus.Service.Services
             _repository = repository;
         }
 
-        public async Task<List<ProductStatus_Response>> getOperationData(Product_Payload payload)
+        public async Task<List<OperationData>> GetOperationData(Production_Payload payload)
         {
-            return await _repository.getOperationData(payload);
+            return await _repository.GetOperationData(payload);
         }
 
         public async Task UpdateOperationData(OperationData product)

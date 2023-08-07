@@ -10,7 +10,7 @@ namespace Tascus.Service.Interfaces
 {
     public interface IOperationDataService
     {
-        Task<List<ProductStatus_Response>> getOperationData(Product_Payload payload);
+        Task<List<OperationData>> GetOperationData(Production_Payload payload);
         Task UpdateOperationData(OperationData product);
     }
 }

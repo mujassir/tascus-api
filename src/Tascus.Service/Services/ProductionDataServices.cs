@@ -19,7 +19,7 @@ namespace Tascus.Service.Services
             _repository = repository;
         }
 
-        public async Task<List<ProductResults_Response>> getProductionData(Product_Payload payload)
+        public async Task<List<ProductionData>> GetProductionData(Production_Payload payload)
         {
             return await _repository.getProductionData(payload);
         }
