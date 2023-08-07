@@ -1,0 +1,130 @@
+{
+	"info": {
+		"_postman_id": "7194919d-2785-4127-87a3-66b3fae4db05",
+		"name": "Tascus Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10876913"
+	},
+	"item": [
+		{
+			"name": "Product Results",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Tascus Base Url}}/ProductResults?Part_Number=G090L&Serial_Number=0021116&Operation_ID=1000",
+					"host": [
+						"{{Tascus Base Url}}"
+					],
+					"path": [
+						"ProductResults"
+					],
+					"query": [
+						{
+							"key": "Part_Number",
+							"value": "G090L"
+						},
+						{
+							"key": "Serial_Number",
+							"value": "0021116"
+						},
+						{
+							"key": "Operation_ID",
+							"value": "1000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product Results",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"step_Name\": \"Test Step Name\",\r\n  \"step_Measurement\": \"Test Step Measurement\",\r\n  \"step_Result\": \"PASS\",\r\n  \"high_Limit\": \"Test High Limit\",\r\n  \"low_Limit\": \"Test Low Limit\",\r\n  \"step_Status\": \"EXECUTING\",\r\n  \"unit\": \"Test Unit\",\r\n  \"step_Run\": 0,\r\n  \"operation_Name\": \"Test Operation Name\",\r\n  \"operation_ID\": 1000,\r\n  \"serial_Number\": \"0021116\",\r\n  \"part_Number\": \"G090L\",\r\n  \"date\": \"2023-08-04T13:32:27.472Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Tascus Base Url}}/ProductResults",
+					"host": [
+						"{{Tascus Base Url}}"
+					],
+					"path": [
+						"ProductResults"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Tascus Base Url}}/ProductStatus?Part_Number=G090L&Serial_Number=0021116&Operation_ID=1000",
+					"host": [
+						"{{Tascus Base Url}}"
+					],
+					"path": [
+						"ProductStatus"
+					],
+					"query": [
+						{
+							"key": "Part_Number",
+							"value": "G090L"
+						},
+						{
+							"key": "Serial_Number",
+							"value": "0021116"
+						},
+						{
+							"key": "Operation_ID",
+							"value": "1000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product Status",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"model_Number\": \"G090L\",\r\n  \"serial_Number\": \"0021116\",\r\n  \"status\": \"EXECUTING\",\r\n  \"result\": \"FAIL\",\r\n  \"operation_ID\": 1000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Tascus Base Url}}/ProductStatus",
+					"host": [
+						"{{Tascus Base Url}}"
+					],
+					"path": [
+						"ProductStatus"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "Tascus Base Url",
+			"value": "https://localhost:7084"
+		}
+	]
+}
