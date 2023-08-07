@@ -1,84 +1,84 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
 using Tascus.Api.Controllers;
 using Tascus.Core.Dtos;
 using Tascus.Core.Model;
 using Tascus.Service.Interfaces;
-using Tascus.Service.Services;
-
 namespace Tascus.Test
 {
-    public class ProductResultsControllerTests
+    public class ProductStatusControllerTests
     {
-        private readonly Mock<IProductionDataServices> _mockService;
-        private readonly Mock<IMapper> _mockMapper;
-        private readonly ProductResultsController _controller;
+        private Mock<IOperationDataService> _mockService;
+        private Mock<IMapper> _mockMapper;
+        private ProductStatusController _controller;
 
-        public ProductResultsControllerTests()
+        public ProductStatusControllerTests()
         {
-            _mockService = new Mock<IProductionDataServices>();
+            _mockService = new Mock<IOperationDataService>();
             _mockMapper = new Mock<IMapper>();
-            _controller = new ProductResultsController(_mockService.Object, _mockMapper.Object);
+            _controller = new ProductStatusController(_mockService.Object, _mockMapper.Object);
         }
 
         [Fact]
-        public async Task Get_ShouldReturnOk_WhenDataExists()
+        public async Task Get_ShouldReturnData_WhenPayloadIsValid()
         {
             // Arrange
-            var payload = new Production_Payload(); // Modify this based on its definition
-            var returnData = new List<ProductionData>
-            {
-                new ProductionData
-                {
-                    // Assuming these are the correct properties, adjust if not.
-                    Step_Name = "Work Instruction",
-                    Step_Measurement = "Pick Parts Tray",
-                    Step_Result = "Complete",
-                    Step_Status = "PASS",
-                    Operation_Name = "Picking",
-                    Operation_ID = 1000,
-                    // Add other properties as needed
-                }
-            };
-            _mockService.Setup(x => x.GetProductionData(payload)).ReturnsAsync(returnData);
-            var mappedData = new List<ProductionDto> { new ProductionDto() };
-            _mockMapper.Setup(x => x.Map<List<ProductionDto>>(returnData)).Returns(mappedData);
+            var payload = new Production_Payload(); // Initialize accordingly
+            var operationDataList = new List<OperationData> { /* Add some mock data */ };
+            var operationDtoList = new List<OperationDto> { /* Add some mock data */ };
+
+            _mockService.Setup(x => x.GetOperationData(payload)).ReturnsAsync(operationDataList);
+            _mockMapper.Setup(x => x.Map<List<OperationDto>>(operationDataList)).Returns(operationDtoList);
 
             // Act
             var result = await _controller.Get(payload);
 
             // Assert
-            Assert.IsType<OkObjectResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<OperationDto>>(okResult.Value);
+            Assert.Equal(operationDtoList, returnValue);
         }
 
         [Fact]
-        public async Task Post_ShouldReturnOk_WhenDataIsValid()
+        public async Task Get_ShouldReturnBadRequest_WhenModelStateIsInvalid()
         {
             // Arrange
-            var payload = new ProductionDto
-            {
-                Step_Name = "Test Step Name",
-                Step_Measurement = "Test Step Measurement",
-                Step_Result = "PASS",
-                High_Limit = "Test High Limit",
-                Low_Limit = "Test Low Limit",
-                Step_Status = "EXECUTING",
-                Unit = "Test Unit",
-                Step_Run = 0,
-                Operation_Name = "Test Operation Name",
-                Operation_ID = 1000,
-                Date = DateTime.Parse("2023-08-04T13:32:27.472Z")
-            };
-
-            var mappedData = new ProductionData(); // Adjust this based on the mapping.
-            _mockMapper.Setup(x => x.Map<ProductionData>(payload)).Returns(mappedData);
-            _mockService.Setup(x => x.InsertProductionData(mappedData)).Returns(Task.CompletedTask);
+            _controller.ModelState.AddModelError("Error", "Mock ModelState Error");
 
             // Act
-            var result = await _controller.Post(payload);
+            var result = await _controller.Get(new Production_Payload());
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Get_ShouldReturnBadRequest_WhenExceptionOccurs()
+        {
+            // Arrange
+            _mockService.Setup(x => x.GetOperationData(It.IsAny<Production_Payload>())).ThrowsAsync(new Exception("Mock exception message"));
+
+            // Act
+            var result = await _controller.Get(new Production_Payload());
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Mock exception message", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task Put_ShouldReturnOk_WhenDataIsValid()
+        {
+            // Arrange
+            var payload = new Operation_Payload { /* Initialize accordingly */ };
+            var mappedData = new OperationData();
+
+            _mockMapper.Setup(x => x.Map<OperationData>(payload)).Returns(mappedData);
+            _mockService.Setup(x => x.UpdateOperationData(mappedData)).Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Put(payload);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -86,62 +86,33 @@ namespace Tascus.Test
             Assert.IsType<OkObjectResult>(result);
         }
 
-
         [Fact]
-        public async Task Get_ShouldReturnBadRequest_WhenModelStateIsInvalid()
+        public async Task Put_ShouldReturnBadRequest_WhenModelStateIsInvalid()
         {
             // Arrange
-            _controller.ModelState.AddModelError("SomeField", "Some error"); // simulating model state error
+            _controller.ModelState.AddModelError("Error", "Mock ModelState Error");
 
             // Act
-            var result = await _controller.Get(new Production_Payload());
+            var result = await _controller.Put(new Operation_Payload());
 
             // Assert
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
         [Fact]
-        public async Task Get_ShouldReturnBadRequest_WhenServiceThrowsException()
+        public async Task Put_ShouldReturnBadRequest_WhenExceptionOccurs()
         {
             // Arrange
-            _mockService.Setup(x => x.GetProductionData(It.IsAny<Production_Payload>())).ThrowsAsync(new Exception("Some error"));
+            var payload = new Operation_Payload { /* Initialize accordingly */ };
+            _mockMapper.Setup(x => x.Map<OperationData>(payload)).Returns(new OperationData());
+            _mockService.Setup(x => x.UpdateOperationData(It.IsAny<OperationData>())).ThrowsAsync(new Exception("Mock exception message"));
 
             // Act
-            var result = await _controller.Get(new Production_Payload());
+            var result = await _controller.Put(payload);
 
             // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.Equal("Some error", badRequestResult.Value);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Mock exception message", badRequestResult.Value);
         }
-
-        [Fact]
-        public async Task Post_ShouldReturnBadRequest_WhenModelStateIsInvalid()
-        {
-            // Arrange
-            _controller.ModelState.AddModelError("SomeField", "Some error"); // simulating model state error
-
-            // Act
-            var result = await _controller.Post(new ProductionDto());
-
-            // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task Post_ShouldReturnBadRequest_WhenServiceThrowsException()
-        {
-            // Arrange
-            _mockService.Setup(x => x.InsertProductionData(It.IsAny<ProductionData>())).ThrowsAsync(new Exception("Some error"));
-
-            // Act
-            var result = await _controller.Post(new ProductionDto());
-
-            // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.Equal("Some error", badRequestResult.Value);
-        }
-
     }
 }
