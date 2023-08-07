@@ -3,7 +3,7 @@
 ASP.NET Core Web API with Entity Framework Core
 
 
-## Controllers
+## APIs
 
 **ProductResult**
 
